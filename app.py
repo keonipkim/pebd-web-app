@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import calendar
+import pebd_calculations
 
 # Set page config
 st.set_page_config(
@@ -61,41 +62,63 @@ with st.expander("Add Service Period"):
     if st.button("Add Period"):
         st.success("Service period added!")
 
+# Lost time section
+st.header("Lost Time Information")
+lost_time_input = st.number_input("Total Lost Time (days)", min_value=0, value=0)
+
 # Calculation section
 st.header("Calculation")
 if st.button("Calculate PEBD"):
-    # This would be where you'd integrate your actual calculation logic
-    st.success("Calculation complete!")
+    # Validate inputs
+    if not initial_active_duty or not eos:
+        st.error("Please enter both Initial Active Duty Date and End of Service Date")
+    else:
+        # Call your calculation function here (replace with actual implementation)
+        try:
+            results = pebd_calculations.calculate_pebd_core(
+                doeaf,
+                initial_active_duty,
+                eos,
+                reentry_date,
+                member_type,
+                1,  # number of periods
+                lost_time_input,
+                adjust_flag
+            )
 
-    # Display results in a nice format
-    col_results1, col_results2 = st.columns(2)
+            st.success("Calculation complete!")
 
-    with col_results1:
-        st.subheader("Summary")
-        st.write(f"**Calculated PEBD:** {datetime.now().strftime('%Y-%m-%d')}")
-        st.write(f"**Member Type:** {member_type}")
-        st.write(f"**Branch:** {branch}")
+            # Display results in a nice format
+            col_results1, col_results2 = st.columns(2)
 
-    with col_results2:
-        st.subheader("Details")
-        st.write(f"**Total Service Days:** Calculated")
-        st.write(f"**Lost Time:** {lost_time} days")
-        st.write(f"**Adjustments:** {'Yes' if adjust_flag else 'No'}")
+            with col_results1:
+                st.subheader("Summary")
+                st.write(f"**Calculated PEBD:** {results['pebd'].strftime('%Y-%m-%d')}")
+                st.write(f"**Member Type:** {member_type}")
+                st.write(f"**Branch:** {branch}")
 
-# Detailed results section
-st.header("Detailed Results")
-st.markdown("Results will appear here after calculation")
+            with col_results2:
+                st.subheader("Details")
+                st.write(f"**Total Service Days:** {results['total_service_days']}")
+                st.write(f"**Net Service Days:** {results['net_service_days']}")
+                st.write(f"**Lost Time:** {results['lost_time']} days")
 
-# Example data table
-example_data = {
-    'Period': ['Service Period 1', 'Service Period 2'],
-    'Start Date': ['2020-01-01', '2021-06-01'],
-    'End Date': ['2020-12-31', '2021-12-31'],
-    'Days': [365, 365],
-    'Notes': ['Active Duty', 'DEP Service']
-}
-example_df = pd.DataFrame(example_data)
-st.dataframe(example_df)
+            # Detailed results section
+            st.header("Detailed Results")
+
+            # Example data table - replace with actual calculation results
+            example_data = {
+                'Period': ['Service Period 1'],
+                'Start Date': [str(initial_active_duty)],
+                'End Date': [str(eos)],
+                'Days': [results['total_service_days']],
+                'Notes': ['Based on DoD FMR calculations']
+            }
+            example_df = pd.DataFrame(example_data)
+            st.dataframe(example_df)
+
+        except Exception as e:
+            st.error(f"Calculation error: {str(e)}")
 
 # About section
 st.header("About This Tool")
@@ -108,5 +131,11 @@ It handles:
 - Break-in-service rules
 - PEBD back-calculation from total creditable days
 
-**Note:** This is a simplified interface. The actual calculation logic would need to be implemented based on your existing Jupyter notebook.
+**How to use this tool:**
+1. Enter your member information
+2. Input your date information
+3. Add service periods
+4. Click "Calculate PEBD" to see results
+
+**Important:** This is a simplified interface. The actual calculation logic needs to be implemented with your specific functions from the Jupyter notebook.
 """)
