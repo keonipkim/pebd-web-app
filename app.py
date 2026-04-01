@@ -32,7 +32,7 @@ with col1:
     service_type = st.selectbox("Service Type", ["Active Duty", "DEP", "Reserve"])
 
     # Branch of service
-    branch = st.selectbox("Branch of Service", ["USMC", "USA", "USN", "USAF", "USCG"])
+    branch = st.selectbox("Branch of Service", ["USMC", "USA", "USN", "USAF", "USCG", "NG"])
 
 with col2:
     st.header("Date Information")
@@ -52,15 +52,44 @@ st.header("Service Periods")
 st.markdown("Enter your service periods. You can add multiple periods if needed.")
 
 # Add a service period input section
-with st.expander("Add Service Period"):
-    period_start = st.date_input("Period Start Date")
-    period_end = st.date_input("Period End Date")
-    period_type = st.selectbox("Period Type", ["Active Duty", "DEP", "Reserve", "Other"])
-    lost_time = st.number_input("Lost Time (days)", min_value=0, value=0)
-    adjust_flag = st.checkbox("Adjustment Flag (1 = non-creditable adjustment)")
+with st.expander("Add Active Service Period"):
+    active_start = st.date_input("Active Period Start Date", key="active_start")
+    active_end = st.date_input("Active Period End Date", key="active_end")
+    active_lost_time = st.number_input("Lost Time (days)", min_value=0, value=0, key="active_lost")
+    active_adjust_flag = st.checkbox("Adjustment Flag (1 = non-creditable adjustment)", key="active_adjust")
 
-    if st.button("Add Period"):
-        st.success("Service period added!")
+    if st.button("Add Active Period", key="add_active"):
+        st.success("Active service period added!")
+
+# Add an inactive service period input section
+with st.expander("Add Inactive Creditable Period"):
+    inactive_start = st.date_input("Inactive Period Start Date", key="inactive_start")
+    inactive_end = st.date_input("Inactive Period End Date", key="inactive_end")
+    inactive_lost_time = st.number_input("Lost Time (days)", min_value=0, value=0, key="inactive_lost")
+    inactive_adjust_flag = st.checkbox("Adjustment Flag (1 = non-creditable adjustment)", key="inactive_adjust")
+
+    if st.button("Add Inactive Period", key="add_inactive"):
+        st.success("Inactive service period added!")
+
+# Add a DEP period input section
+with st.expander("Add DEP Period"):
+    dep_start = st.date_input("DEP Period Start Date", key="dep_start")
+    dep_end = st.date_input("DEP Period End Date", key="dep_end")
+
+    if st.button("Add DEP Period", key="add_dep"):
+        st.success("DEP period added!")
+
+# Add a Lost Time period input section
+with st.expander("Add Lost Time Period"):
+    lost_start = st.date_input("Lost Time Start Date", key="lost_start")
+    lost_end = st.date_input("Lost Time End Date", key="lost_end")
+
+    if st.button("Add Lost Time Period", key="add_lost"):
+        st.success("Lost time period added!")
+
+# Constructive service years
+st.header("Constructive Service")
+constructive_years = st.number_input("Constructive Service Years", min_value=0, value=0, step=1)
 
 # Lost time section
 st.header("Lost Time Information")
@@ -73,6 +102,15 @@ if st.button("Calculate PEBD"):
     if not initial_active_duty or not eos:
         st.error("Please enter both Initial Active Duty Date and End of Service Date")
     else:
+        # Collect all period data
+        active_periods = []
+        inactive_periods = []
+        dep_periods = []
+        lost_periods = []
+
+        # This would be where you'd actually collect the data from the UI
+        # For now, we'll use a placeholder approach
+
         # Call your calculation function here (replace with actual implementation)
         try:
             results = pebd_calculations.calculate_pebd_core(
@@ -83,7 +121,13 @@ if st.button("Calculate PEBD"):
                 member_type,
                 1,  # number of periods
                 lost_time_input,
-                adjust_flag
+                adjust_flag,
+                dep_periods,  # DEP periods
+                active_periods,  # Active periods
+                inactive_periods,  # Inactive periods
+                lost_periods,  # Lost periods
+                constructive_years,  # Constructive years
+                branch  # Branch of service
             )
 
             st.success("Calculation complete!")
@@ -93,13 +137,13 @@ if st.button("Calculate PEBD"):
 
             with col_results1:
                 st.subheader("Summary")
-                st.write(f"**Calculated PEBD:** {results['pebd'].strftime('%Y-%m-%d')}")
+                st.write(f"**Calculated PEBD:** {results['pebd']}")
                 st.write(f"**Member Type:** {member_type}")
                 st.write(f"**Branch:** {branch}")
 
             with col_results2:
                 st.subheader("Details")
-                st.write(f"**Total Service Days:** {results['total_service_days']}")
+                st.write(f"**Total Active Days:** {results['total_active_days']}")
                 st.write(f"**Net Service Days:** {results['net_service_days']}")
                 st.write(f"**Lost Time:** {results['lost_time']} days")
 
@@ -108,12 +152,16 @@ if st.button("Calculate PEBD"):
 
             # Create a more comprehensive results table
             results_data = {
-                'Metric': ['Total Service Days', 'Net Service Days', 'Lost Time', 'PEBD Date'],
+                'Metric': ['Total Active Days', 'Total Inactive Days', 'Total Lost Days',
+                          'DEP Days', 'Constructive Days', 'Net Service Days', 'PEBD Date'],
                 'Value': [
-                    results['total_service_days'],
+                    results['total_active_days'],
+                    results['total_inactive_days'],
+                    results['total_lost_days'],
+                    results['dep_days'],
+                    results['constructive_days'],
                     results['net_service_days'],
-                    results['lost_time'],
-                    results['pebd'].strftime('%Y-%m-%d')
+                    results['pebd']
                 ]
             }
             results_df = pd.DataFrame(results_data)
