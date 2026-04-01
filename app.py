@@ -106,19 +106,22 @@ if st.button("Calculate PEBD"):
             # Detailed results section
             st.header("Detailed Results")
 
-            # Example data table - replace with actual calculation results
-            example_data = {
-                'Period': ['Service Period 1'],
-                'Start Date': [str(initial_active_duty)],
-                'End Date': [str(eos)],
-                'Days': [results['total_service_days']],
-                'Notes': ['Based on DoD FMR calculations']
+            # Create a more comprehensive results table
+            results_data = {
+                'Metric': ['Total Service Days', 'Net Service Days', 'Lost Time', 'PEBD Date'],
+                'Value': [
+                    results['total_service_days'],
+                    results['net_service_days'],
+                    results['lost_time'],
+                    results['pebd'].strftime('%Y-%m-%d')
+                ]
             }
-            example_df = pd.DataFrame(example_data)
-            st.dataframe(example_df)
+            results_df = pd.DataFrame(results_data)
+            st.dataframe(results_df)
 
         except Exception as e:
             st.error(f"Calculation error: {str(e)}")
+            st.info("Please check your inputs and try again. If the problem persists, contact support.")
 
 # About section
 st.header("About This Tool")
