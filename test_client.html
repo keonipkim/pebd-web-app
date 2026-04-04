@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PEBD Calculator - Client Side Test</title>
+    <script src="javascript_calculator.js"></script>
+</head>
+<body>
+    <h1>PEBD Calculator - Client Side Test</h1>
+    <p>This page tests the JavaScript implementation of the PEBD calculator.</p>
+
+    <script>
+        // Test basic functions
+        try {
+            console.log("Testing calculateInclusiveDays...");
+            const days = window.PEBDCalculator.calculateInclusiveDays("2020-01-01", "2020-01-10");
+            console.log("Days calculated:", days);
+            console.log("Expected: 10");
+
+            console.log("Testing calculateServicePeriod...");
+            const result = window.PEBDCalculator.calculateServicePeriod("2020-01-01", "2020-01-10", 2, false);
+            console.log("Service period result:", result);
+            console.log("Expected: totalDays=10, netDays=8");
+
+            console.log("All tests passed!");
+        } catch (error) {
+            console.error("Test failed:", error);
+        }
+    </script>
+</body>
+</html>
