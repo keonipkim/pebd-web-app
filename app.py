@@ -39,14 +39,26 @@ with col2:
     st.header("Date Information")
 
     # Date inputs
-    doeaf = st.date_input("Date of Entry on Active Duty (DOEAF)")
-    initial_active_duty = st.date_input("Initial Active Duty Date")
-    eos = st.date_input("End of Service Date (EOS)")
-    reentry_date = st.date_input("Reentry Date (if applicable)")
+    doeaf = st.date_input("Date of Entry on Active Duty (DOEAF)",
+                         min_value=datetime(1950, 1, 1),
+                         max_value=datetime(2116, 12, 31))
+    initial_active_duty = st.date_input("Initial Active Duty Date",
+                                       min_value=datetime(1950, 1, 1),
+                                       max_value=datetime(2116, 12, 31))
+    eos = st.date_input("End of Service Date (EOS)",
+                       min_value=datetime(1950, 1, 1),
+                       max_value=datetime(2116, 12, 31))
+    reentry_date = st.date_input("Reentry Date (if applicable)",
+                                min_value=datetime(1950, 1, 1),
+                                max_value=datetime(2116, 12, 31))
 
     # Additional dates
-    deactivation_date = st.date_input("Deactivation Date (if applicable)")
-    separation_date = st.date_input("Separation Date (if applicable)")
+    deactivation_date = st.date_input("Deactivation Date (if applicable)",
+                                     min_value=datetime(1950, 1, 1),
+                                     max_value=datetime(2116, 12, 31))
+    separation_date = st.date_input("Separation Date (if applicable)",
+                                   min_value=datetime(1950, 1, 1),
+                                   max_value=datetime(2116, 12, 31))
 
 # Service periods section
 st.header("Service Periods")
@@ -54,8 +66,12 @@ st.markdown("Enter your service periods. You can add multiple periods if needed.
 
 # Add a service period input section
 with st.expander("Add Active Service Period"):
-    active_start = st.date_input("Active Period Start Date", key="active_start")
-    active_end = st.date_input("Active Period End Date", key="active_end")
+    active_start = st.date_input("Active Period Start Date", key="active_start",
+                                min_value=datetime(1950, 1, 1),
+                                max_value=datetime(2116, 12, 31))
+    active_end = st.date_input("Active Period End Date", key="active_end",
+                              min_value=datetime(1950, 1, 1),
+                              max_value=datetime(2116, 12, 31))
     active_lost_time = st.number_input("Lost Time (days)", min_value=0, value=0, key="active_lost")
     active_adjust_flag = st.checkbox("Adjustment Flag (1 = non-creditable adjustment)", key="active_adjust")
 
@@ -64,8 +80,12 @@ with st.expander("Add Active Service Period"):
 
 # Add an inactive service period input section
 with st.expander("Add Inactive Creditable Period"):
-    inactive_start = st.date_input("Inactive Period Start Date", key="inactive_start")
-    inactive_end = st.date_input("Inactive Period End Date", key="inactive_end")
+    inactive_start = st.date_input("Inactive Period Start Date", key="inactive_start",
+                                 min_value=datetime(1950, 1, 1),
+                                 max_value=datetime(2116, 12, 31))
+    inactive_end = st.date_input("Inactive Period End Date", key="inactive_end",
+                               min_value=datetime(1950, 1, 1),
+                               max_value=datetime(2116, 12, 31))
     inactive_lost_time = st.number_input("Lost Time (days)", min_value=0, value=0, key="inactive_lost")
     inactive_adjust_flag = st.checkbox("Adjustment Flag (1 = non-creditable adjustment)", key="inactive_adjust")
 
@@ -74,16 +94,24 @@ with st.expander("Add Inactive Creditable Period"):
 
 # Add a DEP period input section
 with st.expander("Add DEP Period"):
-    dep_start = st.date_input("DEP Period Start Date", key="dep_start")
-    dep_end = st.date_input("DEP Period End Date", key="dep_end")
+    dep_start = st.date_input("DEP Period Start Date", key="dep_start",
+                             min_value=datetime(1950, 1, 1),
+                             max_value=datetime(2116, 12, 31))
+    dep_end = st.date_input("DEP Period End Date", key="dep_end",
+                           min_value=datetime(1950, 1, 1),
+                           max_value=datetime(2116, 12, 31))
 
     if st.button("Add DEP Period", key="add_dep"):
         st.success("DEP period added!")
 
 # Add a Lost Time period input section
 with st.expander("Add Lost Time Period"):
-    lost_start = st.date_input("Lost Time Start Date", key="lost_start")
-    lost_end = st.date_input("Lost Time End Date", key="lost_end")
+    lost_start = st.date_input("Lost Time Start Date", key="lost_start",
+                              min_value=datetime(1950, 1, 1),
+                              max_value=datetime(2116, 12, 31))
+    lost_end = st.date_input("Lost Time End Date", key="lost_end",
+                            min_value=datetime(1950, 1, 1),
+                            max_value=datetime(2116, 12, 31))
 
     if st.button("Add Lost Time Period", key="add_lost"):
         st.success("Lost time period added!")
